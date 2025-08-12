@@ -1,0 +1,23 @@
+{
+  "name": "library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kay-n99/FSO-2025-part8.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kay-n99/FSO-2025-part8/issues"
+  },
+  "homepage": "https://github.com/kay-n99/FSO-2025-part8#readme",
+  "dependencies": {
+    "@apollo/server": "^5.0.0",
+    "graphql": "^16.11.0"
+  }
+}
