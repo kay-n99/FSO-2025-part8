@@ -126,7 +126,7 @@ const typeDefs = `
       title: String!
       author: String!
       published: Int!
-      genre: [String!]!
+      genres: [String!]!
     ): Books,
     editAuthor(
       name: String!
@@ -196,6 +196,11 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  cors: {
+    origin: 'http://localhost:5173', // allow frontend origin
+    credentials: true
+  }
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
 })
+
