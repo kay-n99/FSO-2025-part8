@@ -18,6 +18,9 @@
   "homepage": "https://github.com/kay-n99/FSO-2025-part8#readme",
   "dependencies": {
     "@apollo/server": "^5.0.0",
-    "graphql": "^16.11.0"
+    "dotenv": "^17.2.1",
+    "graphql": "^16.11.0",
+    "mongoose": "^8.17.1",
+    "mongoose-unique-validator": "^4.0.1"
   }
 }
