@@ -9,7 +9,6 @@ query {
   allAuthors {
     name
     born
-    bookCount
   }
 }
 `
@@ -18,7 +17,9 @@ const ALL_BOOKS = gql`
 query {
   allBooks {
     title
-    author
+    author{
+      name
+    }
     published
   }
 }
@@ -80,7 +81,7 @@ const App = () => {
 
       <Authors show={page === "authors"} authors={resultAuthors.data.allAuthors} editAuthors={editAuthors}/>
 
-      <Books show={page === "books"} books={resultBooks.data.allBooks}/>
+      <Books show={page === "books"} books={resultBooks.data?.allBooks || []}/>
 
       <NewBook show={page === "add"} addBooks={addBooks} />
     </div>
