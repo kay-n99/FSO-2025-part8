@@ -8,10 +8,9 @@ const Book = require("./models/book");
 const User = require("./models/user");
 const jwt = require("jsonwebtoken");
 const { GraphQLError } = require("graphql");
-const JWT_SECRET = process.env.JWT_SECRET;
 
 require("dotenv").config();
-
+const JWT_SECRET = process.env.JWT_SECRET;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose
@@ -123,7 +122,7 @@ const typeDefs = `
   type Book {
     title: String!
     published: Int!
-    author: Author!
+    author: Author
     id: ID!
     genres: [String!]!
   }
@@ -227,7 +226,7 @@ const resolvers = {
   //   }
   // },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
       // const book = { ...args, id: uuid()}
       // books = books.concat(book)
       if (!context.currentUser) {
@@ -236,20 +235,13 @@ const resolvers = {
         });
       }
       try {
-        let author = await Author.findOne({ name: args.author });
+        const author =
+          (await Author.findOne({ name: args.author })) ||
+          new Author({ name: args.author }).save();
 
-        if (!author) {
-          author = new Author({ name: args.author });
-          await author.save();
-        }
-
-        const book = new Book({
-          title: args.title,
-          published: args.published,
-          genres: args.genres,
-          author: author._id,
-        });
+        const book = new Book({ ...args, author: author._id });
         await book.save();
+
         return book.populate("author");
       } catch (error) {
         throw new GraphQLError("saving book failed", {
@@ -269,9 +261,15 @@ const resolvers = {
       }
       try {
         const author = await Author.findOne({ name: args.name });
-        if (!author) return null;
+        if (!author) {
+          throw new GraphQLError(`Author ${args.name} not found`, {
+            extensions: { code: "BAD_USER_INPUT" },
+          });
+        }
+
         author.born = args.born;
-        return author.save();
+        await author.save();
+        return author;
       } catch (error) {
         throw new GraphQLError("Editing author failed", {
           extensions: {

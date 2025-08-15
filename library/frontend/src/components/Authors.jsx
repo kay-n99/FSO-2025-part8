@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Authors = (props) => {
-  const [name, setName] = useState("Robert Martin");
-  const [born, setBorn] = useState();
-
-  if (!props.show) {
-    return null;
-  }
+  const [name, setName] = useState("");
+  const [born, setBorn] = useState("");
   const authors = props.authors;
+
+  useEffect(() => {
+    if(authors.length > 0 && name === "") {
+      setName(authors[0].name);
+    }
+  }, [authors, name]);
+
 
   const submit = async (event) => {
     event.preventDefault();
@@ -15,7 +18,7 @@ const Authors = (props) => {
     console.log("update author...");
 
     props.editAuthors({ variables: { name, born } });
-    setName("");
+
     setBorn("");
   };
 
@@ -45,7 +48,7 @@ const Authors = (props) => {
           <tr>
             <td>name</td>
             <td>
-              <select value={name} onChange={(e) => setName(e.target.value)}>
+              <select value={name} onChange={({ target }) => setName(target.value)}>
                 {authors.map((a) => {
                   return (
                     <>
