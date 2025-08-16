@@ -17,11 +17,19 @@
   },
   "homepage": "https://github.com/kay-n99/FSO-2025-part8#readme",
   "dependencies": {
-    "@apollo/server": "^5.0.0",
+    "@apollo/server": "^4.12.2",
+    "@graphql-tools/schema": "^10.0.25",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express4": "^0.0.1",
     "graphql": "^16.11.0",
+    "graphql-subscriptions": "^3.0.0",
+    "graphql-ws": "^5.16.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.17.1",
-    "mongoose-unique-validator": "^4.0.1"
+    "mongoose": "^7.0.0",
+    "mongoose-unique-validator": "^4.0.1",
+    "ws": "^8.18.3"
   }
 }
