@@ -16,8 +16,8 @@ const ALL_AUTHORS = gql`
 `;
 
 export const ALL_BOOKS = gql`
-  query {
-    allBooks {
+  query allBooks($genre: String){
+    allBooks(genre: $genre) {
       title
       author {
         name
@@ -96,9 +96,9 @@ const App = () => {
   });
 
   const resultAuthors = useQuery(ALL_AUTHORS);
-  const resultBooks = useQuery(ALL_BOOKS);
+  // const resultBooks = useQuery(ALL_BOOKS);
 
-  if (resultAuthors.loading || resultBooks.loading) {
+  if (resultAuthors.loading) {
     return <div>Loading...</div>;
   }
 
@@ -123,7 +123,7 @@ const App = () => {
         />
       )}
 
-      {page === "books" && <Books books={resultBooks.data?.allBooks || []} />}
+      {page === "books" && <Books />}
 
       {page === "add" && token && <NewBook addBooks={addBooks} />}
 
