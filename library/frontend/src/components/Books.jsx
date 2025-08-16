@@ -5,13 +5,27 @@ import { ALL_BOOKS } from "../App";
 const Books = (props) => {
   const [selectedGenre, setSelectedGenre] = useState(null);
 
-  const { loading, data } = useQuery(ALL_BOOKS, {
-    variables: { genre: selectedGenre},
+  const { data: allBooksData, loading: allLoading  } = useQuery(ALL_BOOKS, {
+    variables: { genre: null},
+    fetchPolicy: 'cache-and-network',
   })
 
-  if(loading)return <div>loading...</div>
-  const books = data.allBooks
-  const genres = [...new Set(books.flatMap((b) => b.genres))]
+  const { data: filteredBookData, loading: filteredLoading, refetch } = useQuery(ALL_BOOKS, {
+    variables: { genre: selectedGenre},
+    fetchPolicy: "cache-and-network",
+  });
+
+  if(allLoading || filteredLoading)return <div>loading...</div>
+
+  const allBooks = allBooksData?.allBooks || [];
+  const books = filteredBookData?.allBooks || [];
+
+  const genres = [...new Set(allBooks.flatMap((b) => b.genres))];
+
+  const handleGenreClick = (genre) => {
+    setSelectedGenre(genre);
+    refetch({ genre });
+  };
 
   return (
     <div>
@@ -44,13 +58,13 @@ const Books = (props) => {
         {genres.map((g) => (
           <button
             key={g}
-            onClick={() => setSelectedGenre(g)}
+            onClick={() => handleGenreClick(g)}
             style={{ marginRight: "0.5rem" }}
           >
             {g}
           </button>
         ))}
-        <button onClick={() => setSelectedGenre(null)}>all genres</button>
+        <button onClick={() => handleGenreClick(null)}>all genres</button>
       </div>
     </div>
   );
