@@ -4,6 +4,7 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import LoginForm from "./components/Login";
+import Recommend from "./components/Recommend";
 
 const ALL_AUTHORS = gql`
   query {
@@ -14,7 +15,7 @@ const ALL_AUTHORS = gql`
   }
 `;
 
-const ALL_BOOKS = gql`
+export const ALL_BOOKS = gql`
   query {
     allBooks {
       title
@@ -65,7 +66,7 @@ export const LOGIN = gql`
   }
 `;
 
-const ME = gql`
+export const ME = gql`
   query {
     me {
       username
@@ -107,6 +108,7 @@ const App = () => {
         <button onClick={() => setPage("authors")}>authors</button>
         <button onClick={() => setPage("books")}>books</button>
         {token && <button onClick={() => setPage("add")}>add book</button>}
+        {token && <button onClick={() => setPage("recommended")}>recommend</button>}
         {!token ? (
           <button onClick={() => setPage("login")}>login</button>
         ) : (
@@ -124,6 +126,8 @@ const App = () => {
       {page === "books" && <Books books={resultBooks.data?.allBooks || []} />}
 
       {page === "add" && token && <NewBook addBooks={addBooks} />}
+
+      {page === "recommended" && token && <Recommend />}
 
       {page === "login" && <LoginForm setToken={setToken} setPage={setPage} />}
     </div>
