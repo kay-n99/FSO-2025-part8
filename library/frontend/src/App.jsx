@@ -5,6 +5,8 @@ import NewBook from "./components/NewBook";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import LoginForm from "./components/Login";
 import Recommend from "./components/Recommend";
+import { useSubscription } from "@apollo/client";
+import { BOOK_ADDED } from "./subscriptions";
 
 const ALL_AUTHORS = gql`
   query {
@@ -101,6 +103,13 @@ const App = () => {
   if (resultAuthors.loading) {
     return <div>Loading...</div>;
   }
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded
+      window.alert(`New book added: ${addedBook.title} by ${addedBook.author.name}`)
+    },
+  })
 
   return (
     <div>
