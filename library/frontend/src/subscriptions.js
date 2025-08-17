@@ -4,11 +4,13 @@ export const BOOK_ADDED = gql`
     subscription {
         bookAdded{
             title
+            published
             author {
                 name
             }
-            published
             genres
+            id
         }
     }
 `
+

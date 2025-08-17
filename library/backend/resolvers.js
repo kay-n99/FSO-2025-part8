@@ -29,7 +29,6 @@ const resolvers = {
     me: (root, args, context) => {
       return context.currentUser;
     },
-
   },
   Mutation: {
     addBook: async (root, args, context) => {
@@ -41,14 +40,26 @@ const resolvers = {
         });
       }
       try {
-        const author =
-          (await Author.findOne({ name: args.author })) ||
-          new Author({ name: args.author }).save();
+        const existingAuthor = await Author.findOne({ name: args.author });
 
-        const book = new Book({ ...args, author: author._id });
+        let author;
+        if (existingAuthor) {
+          author = existingAuthor;
+        } else {
+          author = new Author({ name: args.author });
+          await author.save();
+        }
+
+        const book = new Book({
+          title: args.title,
+          published: args.published,
+          genres: args.genres,
+          author: author._id, 
+        });
+
         await book.save();
-
         const savedBook = await book.populate("author");
+
         pubsub.publish("BOOK_ADDED", { bookAdded: savedBook });
         return savedBook;
       } catch (error) {
@@ -128,4 +139,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers
+module.exports = resolvers;

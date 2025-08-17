@@ -5,7 +5,7 @@ import NewBook from "./components/NewBook";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import LoginForm from "./components/Login";
 import Recommend from "./components/Recommend";
-import { useSubscription } from "@apollo/client";
+import { useSubscription, useApolloClient } from "@apollo/client";
 import { BOOK_ADDED } from "./subscriptions";
 
 const ALL_AUTHORS = gql`
@@ -21,11 +21,12 @@ export const ALL_BOOKS = gql`
   query allBooks($genre: String){
     allBooks(genre: $genre) {
       title
+      published
       author {
         name
       }
-      published
       genres
+      id
     }
   }
 `;
@@ -77,11 +78,27 @@ export const ME = gql`
   }
 `;
 
+
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useState(
     localStorage.getItem("library-user-token")
   );
+  const client = useApolloClient()
+
+   useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded
+      window.alert(`New book added: ${addedBook.title} by ${addedBook.author.name}`)
+
+      client.cache.updateQuery({ query: ALL_BOOKS }, (data) => {
+        if(!data) return { allBooks: [addedBook]}
+        return {
+          allBooks: data.allBooks.concat(addedBook)
+        }
+      })
+    },
+  })
 
   const logout = () => {
     setToken(null);
@@ -104,12 +121,7 @@ const App = () => {
     return <div>Loading...</div>;
   }
 
-  useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
-      const addedBook = data.data.bookAdded
-      window.alert(`New book added: ${addedBook.title} by ${addedBook.author.name}`)
-    },
-  })
+ 
 
   return (
     <div>
