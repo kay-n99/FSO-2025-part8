@@ -10,7 +10,27 @@ const resolvers = {
   Query: {
     bookCount: async () => Book.collection.countDocuments(),
     authorCount: async () => Author.collection.countDocuments(),
-    allAuthors: async () => Author.find({}),
+    allAuthors: async () => {
+      const authors = await Author.find({});
+      const bookCounts = await Book.aggregate([
+        { $group: { _id: "$author", count: { $sum: 1 } } },
+      ]);
+
+      const countMap = {};
+      bookCounts.forEach((b) => {
+        if(b._id){
+          countMap[b._id.toString()] = b.count;
+        }
+        
+      });
+
+      return authors.map((a) => ({
+        id: a._id,
+        name: a.name,
+        born: a.born,
+        bookCount: countMap[a._id.toString()] || 0,
+      }));
+    },
     allBooks: async (root, args) => {
       let filter = {};
       if (args.author) {
@@ -54,7 +74,7 @@ const resolvers = {
           title: args.title,
           published: args.published,
           genres: args.genres,
-          author: author._id, 
+          author: author._id,
         });
 
         await book.save();
